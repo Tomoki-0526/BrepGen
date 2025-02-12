@@ -157,9 +157,10 @@ def process(step_folder):
             step_path = step_folder 
             process_furniture = True
         else:
-            for _, _, files in os.walk(step_folder):
-                assert len(files) == 1 
-                step_path = os.path.join(step_folder, files[0])
+            # for _, _, files in os.walk(step_folder):
+            #     assert len(files) == 1 
+            #     step_path = os.path.join(step_folder, files[0])
+            step_path = step_folder + '.step'
             process_furniture = False
 
         # Check single solid
@@ -179,7 +180,7 @@ def process(step_folder):
             data_uid = step_path.split('/')[-2] + '_' + step_path.split('/')[-1]
             sub_folder = step_path.split('/')[-3]
         else:
-            data_uid = step_path.split('/')[-2]
+            data_uid = step_path.split('/')[-1]
             sub_folder = data_uid[:4]
             
         if data_uid.endswith('.step'):
