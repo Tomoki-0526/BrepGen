@@ -323,6 +323,7 @@ class EdgeVAETrainer():
                 posterior = self.model.encode(edge_u).latent_dist
                 z = posterior.sample()
                 latent_code['train'].append(z)
+            latent_code['train'] = torch.cat(latent_code['train'], dim=0)
 
             for edge_u in self.val_dataloader:
                 edge_u = edge_u.to(self.device).permute(0,2,1)
@@ -330,6 +331,7 @@ class EdgeVAETrainer():
                 posterior = self.model.encode(edge_u).latent_dist
                 z = posterior.sample()
                 latent_code['val'].append(z)
+            latent_code['val'] = torch.cat(latent_code['val'], dim=0)
                 
             for edge_u in self.test_dataloader:
                 edge_u = edge_u.to(self.device).permute(0,2,1)
@@ -337,6 +339,7 @@ class EdgeVAETrainer():
                 posterior = self.model.encode(edge_u).latent_dist
                 z = posterior.sample()
                 latent_code['test'].append(z)
+            latent_code['test'] = torch.cat(latent_code['test'], dim=0)
         
         return latent_code
     
