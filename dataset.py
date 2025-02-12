@@ -221,6 +221,7 @@ class EdgeData(torch.utils.data.Dataset):
                 data_list = pickle.load(tf)['val']
 
             datas = []
+            groups = []
             for uid in tqdm(data_list):
                 try:
                     path = os.path.join(input_data, str(math.floor(int(uid.split('.')[0])/10000)).zfill(4), uid)
@@ -232,7 +233,9 @@ class EdgeData(torch.utils.data.Dataset):
 
                 _, _, _, edge_u, _, _, _, _, _, _, _, _ = data.values() 
                 datas.append(edge_u)
+                groups.append(edge_u.shape[0])
             self.data = np.vstack(datas)
+            self.group = groups
 
         # Load test data
         elif self.test:
@@ -241,6 +244,7 @@ class EdgeData(torch.utils.data.Dataset):
                 data_list = pickle.load(tf)['test']
 
             datas = []
+            groups = []
             for uid in tqdm(data_list):
                 try:
                     path = os.path.join(input_data, str(math.floor(int(uid.split('.')[0])/10000)).zfill(4), uid)
@@ -252,7 +256,9 @@ class EdgeData(torch.utils.data.Dataset):
 
                 _, _, _, edge_u, _, _, _, _, _, _, _, _ = data.values() 
                 datas.append(edge_u)
+                groups.append(edge_u.shape[0])
             self.data = np.vstack(datas)
+            self.group = groups
 
         # Load training data (deduplicated)
         else:
@@ -263,6 +269,7 @@ class EdgeData(torch.utils.data.Dataset):
                 data_list = pickle.load(tf)['train']
 
             datas = []
+            groups = []
             for uid in tqdm(data_list):
                 try:
                     path = os.path.join(input_data, str(math.floor(int(uid.split('.')[0])/10000)).zfill(4), uid)
@@ -274,7 +281,9 @@ class EdgeData(torch.utils.data.Dataset):
 
                 _, _, _, edge_u, _, _, _, _, _, _, _, _ = data.values() 
                 datas.append(edge_u)
+                groups.append(edge_u.shape[0])
             self.data = np.vstack(datas)
+            self.group = groups
 
         print(len(self.data))       
         return
