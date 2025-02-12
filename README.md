@@ -120,3 +120,12 @@ If you find our work useful in your research, please cite the following paper
   year={2024}
 }
 ```
+
+# Tomoki-defined
+
+## Dataset structure
+
+step_path/{chunk}/{uid}.step
+
+## Inference
+

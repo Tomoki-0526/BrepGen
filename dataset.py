@@ -119,8 +119,9 @@ def load_data(input_data, input_list, validate, args):
 
 class SurfData(torch.utils.data.Dataset):
     """ Surface VAE Dataloader """
-    def __init__(self, input_data, input_list, validate=False, aug=False): 
+    def __init__(self, input_data, input_list, validate=False, test=False, aug=False): 
         self.validate = validate
+        self.test = test
         self.aug = aug
 
         # Load validation data
@@ -130,6 +131,7 @@ class SurfData(torch.utils.data.Dataset):
                 data_list = pickle.load(tf)['val']
             
             datas = [] 
+            groups = []
             for uid in data_list:
                 try:
                     path = os.path.join(input_data, str(math.floor(int(uid.split('.')[0])/10000)).zfill(4), uid)
@@ -140,13 +142,55 @@ class SurfData(torch.utils.data.Dataset):
                     data = pickle.load(tf)
                 _, _, surf_uv, _, _, _, _, _, _, _, _, _ = data.values() 
                 datas.append(surf_uv)
+                groups.append(surf_uv.shape[0])
             self.data = np.vstack(datas)
+            self.group = groups
+
+        # Load test data
+        elif self.test:
+            print('Loading test data...')
+            with open(input_list, "rb") as tf:
+                data_list = pickle.load(tf)['test']
+            
+            datas = [] 
+            groups = []
+            for uid in data_list:
+                try:
+                    path = os.path.join(input_data, str(math.floor(int(uid.split('.')[0])/10000)).zfill(4), uid)
+                except Exception:
+                    path = os.path.join(input_data, uid)
+                
+                with open(path, "rb") as tf:
+                    data = pickle.load(tf)
+                _, _, surf_uv, _, _, _, _, _, _, _, _, _ = data.values() 
+                datas.append(surf_uv)
+                groups.append(surf_uv.shape[0])
+            self.data = np.vstack(datas)
+            self.group = groups
 
         # Load training data (deduplicated)
         else:
             print('Loading training data...')
+            # with open(input_list, "rb") as tf:
+            #     self.data = pickle.load(tf)  
             with open(input_list, "rb") as tf:
-                self.data = pickle.load(tf)  
+                data_list = pickle.load(tf)['train']
+            
+            datas = [] 
+            groups = []
+            for uid in data_list:
+                try:
+                    path = os.path.join(input_data, str(math.floor(int(uid.split('.')[0])/10000)).zfill(4), uid)
+                except Exception:
+                    path = os.path.join(input_data, uid)
+                
+                with open(path, "rb") as tf:
+                    data = pickle.load(tf)
+                _, _, surf_uv, _, _, _, _, _, _, _, _, _ = data.values() 
+                datas.append(surf_uv)
+                groups.append(surf_uv.shape[0])
+            self.data = np.vstack(datas)
+            self.group = groups
                 
         print(len(self.data))
         return
@@ -165,8 +209,9 @@ class SurfData(torch.utils.data.Dataset):
 
 class EdgeData(torch.utils.data.Dataset):
     """ Edge VAE Dataloader """
-    def __init__(self, input_data, input_list, validate=False, aug=False): 
+    def __init__(self, input_data, input_list, validate=False, test=False, aug=False): 
         self.validate = validate
+        self.test = test
         self.aug = aug
 
         # Load validation data
@@ -189,11 +234,47 @@ class EdgeData(torch.utils.data.Dataset):
                 datas.append(edge_u)
             self.data = np.vstack(datas)
 
+        # Load test data
+        elif self.test:
+            print('Loading test data...')
+            with open(input_list, "rb") as tf:
+                data_list = pickle.load(tf)['test']
+
+            datas = []
+            for uid in tqdm(data_list):
+                try:
+                    path = os.path.join(input_data, str(math.floor(int(uid.split('.')[0])/10000)).zfill(4), uid)
+                except Exception:
+                    path = os.path.join(input_data, uid)
+
+                with open(path, "rb") as tf:
+                    data = pickle.load(tf)
+
+                _, _, _, edge_u, _, _, _, _, _, _, _, _ = data.values() 
+                datas.append(edge_u)
+            self.data = np.vstack(datas)
+
         # Load training data (deduplicated)
         else:
             print('Loading training data...')
+            # with open(input_list, "rb") as tf:
+            #     self.data = pickle.load(tf)   
             with open(input_list, "rb") as tf:
-                self.data = pickle.load(tf)   
+                data_list = pickle.load(tf)['train']
+
+            datas = []
+            for uid in tqdm(data_list):
+                try:
+                    path = os.path.join(input_data, str(math.floor(int(uid.split('.')[0])/10000)).zfill(4), uid)
+                except Exception:
+                    path = os.path.join(input_data, uid)
+
+                with open(path, "rb") as tf:
+                    data = pickle.load(tf)
+
+                _, _, _, edge_u, _, _, _, _, _, _, _, _ = data.values() 
+                datas.append(edge_u)
+            self.data = np.vstack(datas)
 
         print(len(self.data))       
         return

@@ -10,7 +10,7 @@ from network import *
 
 class SurfVAETrainer():
     """ Surface VAE Trainer """
-    def __init__(self, args, train_dataset, val_dataset): 
+    def __init__(self, args, train_dataset, val_dataset, test_dataset): 
         # Initilize model and load to gpu
         self.iters = 0
         self.epoch = 0
@@ -56,6 +56,10 @@ class SurfVAETrainer():
                                              shuffle=False, 
                                              batch_size=args.batch_size,
                                              num_workers=8)
+        self.test_dataloader = torch.utils.data.DataLoader(test_dataset,
+                                                shuffle=False,
+                                                batch_size=1,
+                                                num_workers=8)
         return
     
         
@@ -127,7 +131,45 @@ class SurfVAETrainer():
         self.model.train() # set to train
         wandb.log({"Val-mse": mse}, step=self.iters)
         return mse
-    
+
+
+    def inference_latent(self):
+        """
+        Inference latent code for all data
+        """
+        latent_code = {
+            'train': [],
+            'val': [],
+            'test': []
+        }
+
+        self.model.eval()
+        with torch.no_grad():
+            for surf_uv in self.train_dataloader:
+                surf_uv = surf_uv.to(self.device).permute(0,3,1,2)
+                
+                posterior = self.model.encode(surf_uv).latent_dist
+                z = posterior.sample()
+                latent_code['train'].append(z)
+            latent_code['train'] = torch.cat(latent_code['train'], dim=0)
+
+            for surf_uv in self.val_dataloader:
+                surf_uv = surf_uv.to(self.device).permute(0,3,1,2)
+                
+                posterior = self.model.encode(surf_uv).latent_dist
+                z = posterior.sample()
+                latent_code['val'].append(z)
+            latent_code['val'] = torch.cat(latent_code['val'], dim=0)
+                
+            for surf_uv in self.test_dataloader:
+                surf_uv = surf_uv.to(self.device).permute(0,3,1,2)
+                
+                posterior = self.model.encode(surf_uv).latent_dist
+                z = posterior.sample()
+                latent_code['test'].append(z)
+            latent_code['test'] = torch.cat(latent_code['test'], dim=0)
+
+        return latent_code
 
     def save_model(self):
         torch.save(self.model.state_dict(), os.path.join(self.save_dir,'epoch_'+str(self.epoch)+'.pt'))
@@ -136,7 +178,7 @@ class SurfVAETrainer():
 
 class EdgeVAETrainer():
     """ Edge VAE Trainer """
-    def __init__(self, args, train_dataset, val_dataset): 
+    def __init__(self, args, train_dataset, val_dataset, test_dataset): 
         # Initilize model and load to gpu
         self.iters = 0
         self.epoch = 0
@@ -183,6 +225,10 @@ class EdgeVAETrainer():
                                              shuffle=False, 
                                              batch_size=args.batch_size,
                                              num_workers=8)
+        self.test_dataloader = torch.utils.data.DataLoader(test_dataset,
+                                                shuffle=False,
+                                                batch_size=1,
+                                                num_workers=8)
         return
     
 
@@ -257,6 +303,42 @@ class EdgeVAETrainer():
         self.model.train() # set to train
         wandb.log({"Val-mse": mse}, step=self.iters)
         return mse
+    
+
+    def inference_latent(self):
+        """
+        Inference latent code for all data
+        """
+        latent_code = {
+            'train': [],
+            'val': [],
+            'test': []
+        }
+
+        self.model.eval()
+        with torch.no_grad():
+            for edge_u in self.train_dataloader:
+                edge_u = edge_u.to(self.device).permute(0,2,1)
+                
+                posterior = self.model.encode(edge_u).latent_dist
+                z = posterior.sample()
+                latent_code['train'].append(z)
+
+            for edge_u in self.val_dataloader:
+                edge_u = edge_u.to(self.device).permute(0,2,1)
+                
+                posterior = self.model.encode(edge_u).latent_dist
+                z = posterior.sample()
+                latent_code['val'].append(z)
+                
+            for edge_u in self.test_dataloader:
+                edge_u = edge_u.to(self.device).permute(0,2,1)
+                
+                posterior = self.model.encode(edge_u).latent_dist
+                z = posterior.sample()
+                latent_code['test'].append(z)
+        
+        return latent_code
     
 
     def save_model(self):

@@ -153,6 +153,8 @@ def get_args_vae():
                         help='Path to training list')  
     parser.add_argument('--val_list', type=str, default='data_process/deepcad_data_split_6bit.pkl', 
                         help='Path to validation list')  
+    parser.add_argument('--test_list', type=str, default='data_process/deepcad_data_split_6bit.pkl', 
+                        help='Path to test list')  
     # Training parameters
     parser.add_argument("--option", type=str, choices=['surface', 'edge'], default='surface', 
                         help="Choose between option surface or edge (default: surface)")
