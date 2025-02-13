@@ -35,8 +35,32 @@ def run(args):
         train_groups = train_dataset.groups
         train_groups_name = train_dataset.groups_name
         last_idx = 0
-        for i, chunk, uid in enumerate(train_groups_name):
+        for i, (chunk, uid) in enumerate(train_groups_name):
             num_faces = train_groups[i]
+            output_dir = os.path.join(z_save_dir, chunk, uid, 'surf')
+            if not os.path.exists(output_dir):
+                os.makedirs(output_dir)
+            for j in range(num_faces):
+                z_face = z[last_idx + j].cpu().detach().numpy()
+                np.save(os.path.join(output_dir, 'surf_{}.npy'.format(j)), z_face)
+            last_idx += num_faces
+        val_groups = val_dataset.groups
+        val_groups_name = val_dataset.groups_name
+        last_idx = 0
+        for i, (chunk, uid) in enumerate(val_groups_name):
+            num_faces = val_groups[i]
+            output_dir = os.path.join(z_save_dir, chunk, uid, 'surf')
+            if not os.path.exists(output_dir):
+                os.makedirs(output_dir)
+            for j in range(num_faces):
+                z_face = z[last_idx + j].cpu().detach().numpy()
+                np.save(os.path.join(output_dir, 'surf_{}.npy'.format(j)), z_face)
+            last_idx += num_faces
+        test_groups = test_dataset.groups
+        test_groups_name = test_dataset.groups_name
+        last_idx = 0
+        for i, (chunk, uid) in enumerate(test_groups_name):
+            num_faces = test_groups[i]
             output_dir = os.path.join(z_save_dir, chunk, uid, 'surf')
             if not os.path.exists(output_dir):
                 os.makedirs(output_dir)
