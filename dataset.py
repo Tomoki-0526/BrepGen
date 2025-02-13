@@ -124,75 +124,36 @@ class SurfData(torch.utils.data.Dataset):
         self.test = test
         self.aug = aug
 
-        # Load validation data
+        # Load data
         if self.validate: 
             print('Loading validation data...')
-            with open(input_list, "rb") as tf:
-                data_list = pickle.load(tf)['val']
-            
-            datas = [] 
-            groups = []
-            for uid in data_list:
-                chunk = str(math.floor(int(uid.split('.')[0])/10000)).zfill(4)
-                try:
-                    path = os.path.join(input_data, chunk, uid)
-                except Exception:
-                    path = os.path.join(input_data, uid)
-                
-                with open(path, "rb") as tf:
-                    data = pickle.load(tf)
-                _, _, surf_uv, _, _, _, _, _, _, _, _, _ = data.values() 
-                datas.append(surf_uv)
-                groups.append(surf_uv.shape[0])
-            self.data = np.vstack(datas)
-            self.group = groups
-
-        # Load test data
+            field = 'val'
         elif self.test:
             print('Loading test data...')
-            with open(input_list, "rb") as tf:
-                data_list = pickle.load(tf)['test']
-            
-            datas = [] 
-            groups = []
-            for uid in data_list:
-                chunk = str(math.floor(int(uid.split('.')[0])/10000)).zfill(4)
-                try:
-                    path = os.path.join(input_data, chunk, uid)
-                except Exception:
-                    path = os.path.join(input_data, uid)
-                
-                with open(path, "rb") as tf:
-                    data = pickle.load(tf)
-                _, _, surf_uv, _, _, _, _, _, _, _, _, _ = data.values() 
-                datas.append(surf_uv)
-                groups.append(surf_uv.shape[0])
-            self.data = np.vstack(datas)
-            self.group = groups
-
-        # Load training data (deduplicated)
+            field = 'test'
         else:
             print('Loading training data...')
-            # with open(input_list, "rb") as tf:
-            #     self.data = pickle.load(tf)  
-            with open(input_list, "rb") as tf:
-                data_list = pickle.load(tf)['train']
+            field = 'train'
+
+        with open(input_list, "rb") as tf:
+            data_list = pickle.load(tf)[field]
+        
+        datas = [] 
+        groups = []
+        for uid in data_list:
+            chunk = str(math.floor(int(uid.split('.')[0])/10000)).zfill(4)
+            try:
+                path = os.path.join(input_data, chunk, uid)
+            except Exception:
+                path = os.path.join(input_data, uid)
             
-            datas = [] 
-            groups = []
-            for uid in data_list:
-                try:
-                    path = os.path.join(input_data, str(math.floor(int(uid.split('.')[0])/10000)).zfill(4), uid)
-                except Exception:
-                    path = os.path.join(input_data, uid)
-                
-                with open(path, "rb") as tf:
-                    data = pickle.load(tf)
-                _, _, surf_uv, _, _, _, _, _, _, _, _, _ = data.values() 
-                datas.append(surf_uv)
-                groups.append(surf_uv.shape[0])
-            self.data = np.vstack(datas)
-            self.group = groups
+            with open(path, "rb") as tf:
+                data = pickle.load(tf)
+            _, _, surf_uv, _, _, _, _, _, _, _, _, _ = data.values() 
+            datas.append(surf_uv)
+            groups.append(surf_uv.shape[0])
+        self.data = np.vstack(datas)
+        self.group = groups
                 
         print(len(self.data))
         return
@@ -216,78 +177,38 @@ class EdgeData(torch.utils.data.Dataset):
         self.test = test
         self.aug = aug
 
-        # Load validation data
+        # Load data
         if self.validate: 
             print('Loading validation data...')
-            with open(input_list, "rb") as tf:
-                data_list = pickle.load(tf)['val']
-
-            datas = []
-            groups = []
-            for uid in tqdm(data_list):
-                try:
-                    path = os.path.join(input_data, str(math.floor(int(uid.split('.')[0])/10000)).zfill(4), uid)
-                except Exception:
-                    path = os.path.join(input_data, uid)
-
-                with open(path, "rb") as tf:
-                    data = pickle.load(tf)
-
-                _, _, _, edge_u, _, _, _, _, _, _, _, _ = data.values() 
-                datas.append(edge_u)
-                groups.append(edge_u.shape[0])
-            self.data = np.vstack(datas)
-            self.group = groups
-
-        # Load test data
+            field = 'val'
         elif self.test:
             print('Loading test data...')
-            with open(input_list, "rb") as tf:
-                data_list = pickle.load(tf)['test']
-
-            datas = []
-            groups = []
-            for uid in tqdm(data_list):
-                try:
-                    path = os.path.join(input_data, str(math.floor(int(uid.split('.')[0])/10000)).zfill(4), uid)
-                except Exception:
-                    path = os.path.join(input_data, uid)
-
-                with open(path, "rb") as tf:
-                    data = pickle.load(tf)
-
-                _, _, _, edge_u, _, _, _, _, _, _, _, _ = data.values() 
-                datas.append(edge_u)
-                groups.append(edge_u.shape[0])
-            self.data = np.vstack(datas)
-            self.group = groups
-
-        # Load training data (deduplicated)
+            field = 'test'
         else:
             print('Loading training data...')
-            # with open(input_list, "rb") as tf:
-            #     self.data = pickle.load(tf)   
-            with open(input_list, "rb") as tf:
-                data_list = pickle.load(tf)['train']
+            field = 'train'
 
-            datas = []
-            groups = []
-            for uid in tqdm(data_list):
-                try:
-                    path = os.path.join(input_data, str(math.floor(int(uid.split('.')[0])/10000)).zfill(4), uid)
-                except Exception:
-                    path = os.path.join(input_data, uid)
-
-                with open(path, "rb") as tf:
-                    data = pickle.load(tf)
-
-                _, _, _, edge_u, _, _, _, _, _, _, _, _ = data.values() 
-                datas.append(edge_u)
-                groups.append(edge_u.shape[0])
-            self.data = np.vstack(datas)
-            self.group = groups
-
-        print(len(self.data))       
+        with open(input_list, "rb") as tf:
+            data_list = pickle.load(tf)[field]
+        
+        datas = [] 
+        groups = []
+        for uid in data_list:
+            chunk = str(math.floor(int(uid.split('.')[0])/10000)).zfill(4)
+            try:
+                path = os.path.join(input_data, chunk, uid)
+            except Exception:
+                path = os.path.join(input_data, uid)
+            
+            with open(path, "rb") as tf:
+                data = pickle.load(tf)
+            _, _, surf_uv, _, _, _, _, _, _, _, _, _ = data.values() 
+            datas.append(surf_uv)
+            groups.append(surf_uv.shape[0])
+        self.data = np.vstack(datas)
+        self.group = groups
+                
+        print(len(self.data))
         return
 
     def __len__(self):
