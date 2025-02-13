@@ -41,7 +41,7 @@ def run(args):
             if not os.path.exists(output_dir):
                 os.makedirs(output_dir)
             for j in range(num_faces):
-                z_face = z[last_idx + j].cpu().detach().numpy()
+                z_face = z['train'][last_idx + j].cpu().detach().numpy()
                 np.save(os.path.join(output_dir, 'surf_{}.npy'.format(j)), z_face)
             last_idx += num_faces
         val_groups = val_dataset.groups
@@ -53,7 +53,7 @@ def run(args):
             if not os.path.exists(output_dir):
                 os.makedirs(output_dir)
             for j in range(num_faces):
-                z_face = z[last_idx + j].cpu().detach().numpy()
+                z_face = z['val'][last_idx + j].cpu().detach().numpy()
                 np.save(os.path.join(output_dir, 'surf_{}.npy'.format(j)), z_face)
             last_idx += num_faces
         test_groups = test_dataset.groups
@@ -65,7 +65,7 @@ def run(args):
             if not os.path.exists(output_dir):
                 os.makedirs(output_dir)
             for j in range(num_faces):
-                z_face = z[last_idx + j].cpu().detach().numpy()
+                z_face = z['test'][last_idx + j].cpu().detach().numpy()
                 np.save(os.path.join(output_dir, 'surf_{}.npy'.format(j)), z_face)
             last_idx += num_faces
 

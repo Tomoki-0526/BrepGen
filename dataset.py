@@ -141,12 +141,13 @@ class SurfData(torch.utils.data.Dataset):
         datas = [] 
         self.groups = []
         self.groups_name = []
-        for uid in data_list:
-            chunk = str(math.floor(int(uid.split('.')[0])/10000)).zfill(4)
+        for pkl in data_list:
+            uid = pkl.split('.')[0]
+            chunk = str(math.floor(int(uid)/10000)).zfill(4)
             try:
-                path = os.path.join(input_data, chunk, uid)
+                path = os.path.join(input_data, chunk, pkl)
             except Exception:
-                path = os.path.join(input_data, uid)
+                path = os.path.join(input_data, pkl)
             
             with open(path, "rb") as tf:
                 data = pickle.load(tf)
@@ -194,12 +195,13 @@ class EdgeData(torch.utils.data.Dataset):
         
         datas = [] 
         groups = []
-        for uid in data_list:
-            chunk = str(math.floor(int(uid.split('.')[0])/10000)).zfill(4)
+        for pkl in data_list:
+            uid = pkl.split('.')[0]
+            chunk = str(math.floor(int(uid)/10000)).zfill(4)
             try:
-                path = os.path.join(input_data, chunk, uid)
+                path = os.path.join(input_data, chunk, pkl)
             except Exception:
-                path = os.path.join(input_data, uid)
+                path = os.path.join(input_data, pkl)
             
             with open(path, "rb") as tf:
                 data = pickle.load(tf)
