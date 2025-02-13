@@ -202,9 +202,9 @@ class EdgeData(torch.utils.data.Dataset):
             
             with open(path, "rb") as tf:
                 data = pickle.load(tf)
-            _, _, surf_uv, _, _, _, _, _, _, _, _, _ = data.values() 
-            datas.append(surf_uv)
-            groups.append(surf_uv.shape[0])
+            _, _, _, edge_u, _, _, _, _, _, _, _, _ = data.values() 
+            datas.append(edge_u)
+            groups.append(edge_u.shape[0])
         self.data = np.vstack(datas)
         self.group = groups
                 
