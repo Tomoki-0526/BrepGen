@@ -139,7 +139,8 @@ class SurfData(torch.utils.data.Dataset):
             data_list = pickle.load(tf)[field]
         
         datas = [] 
-        groups = []
+        self.groups = []
+        self.groups_name = []
         for uid in data_list:
             chunk = str(math.floor(int(uid.split('.')[0])/10000)).zfill(4)
             try:
@@ -151,9 +152,9 @@ class SurfData(torch.utils.data.Dataset):
                 data = pickle.load(tf)
             _, _, surf_uv, _, _, _, _, _, _, _, _, _ = data.values() 
             datas.append(surf_uv)
-            groups.append(surf_uv.shape[0])
+            self.groups.append(surf_uv.shape[0])
+            self.groups_name.append((chunk, uid))
         self.data = np.vstack(datas)
-        self.group = groups
                 
         print(len(self.data))
         return

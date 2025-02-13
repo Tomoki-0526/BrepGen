@@ -49,7 +49,7 @@ class SurfVAETrainer():
 
         # Initilizer dataloader
         self.train_dataloader = torch.utils.data.DataLoader(train_dataset, 
-                                                shuffle=True, 
+                                                shuffle=False, 
                                                 batch_size=args.batch_size,
                                                 num_workers=8)
         self.val_dataloader = torch.utils.data.DataLoader(val_dataset, 
@@ -58,7 +58,7 @@ class SurfVAETrainer():
                                              num_workers=8)
         self.test_dataloader = torch.utils.data.DataLoader(test_dataset,
                                                 shuffle=False,
-                                                batch_size=1,
+                                                batch_size=args.batch_size,
                                                 num_workers=8)
         return
     
@@ -218,7 +218,7 @@ class EdgeVAETrainer():
 
         # Initilizer dataloader
         self.train_dataloader = torch.utils.data.DataLoader(train_dataset, 
-                                                shuffle=True, 
+                                                shuffle=False, 
                                                 batch_size=args.batch_size,
                                                 num_workers=8)
         self.val_dataloader = torch.utils.data.DataLoader(val_dataset, 
@@ -227,7 +227,7 @@ class EdgeVAETrainer():
                                              num_workers=8)
         self.test_dataloader = torch.utils.data.DataLoader(test_dataset,
                                                 shuffle=False,
-                                                batch_size=1,
+                                                batch_size=args.batch_size,
                                                 num_workers=8)
         return
     

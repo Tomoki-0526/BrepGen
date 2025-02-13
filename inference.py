@@ -1,5 +1,5 @@
 import os
-import torch
+import numpy as np
 from utils import get_args_vae
 
 # Parse input augments
@@ -20,6 +20,8 @@ from dataset import EdgeData
 M = 30  # max number of faces in a cad model
 N = 20  # max number of edges of a face in a cad model
 
+z_save_dir = '/home/szj/DGCNNEncoderZ/data/z'
+
 def run(args):
     if args.option == 'surface':
         train_dataset = SurfData(args.data, args.train_list, aug=args.data_aug)
@@ -30,6 +32,19 @@ def run(args):
         print('Start surface inference...')
         z = vae.inference_latent() 
 
+        train_groups = train_dataset.groups
+        train_groups_name = train_dataset.groups_name
+        last_idx = 0
+        for i, chunk, uid in enumerate(train_groups_name):
+            num_faces = train_groups[i]
+            output_dir = os.path.join(z_save_dir, chunk, uid, 'surf')
+            if not os.path.exists(output_dir):
+                os.makedirs(output_dir)
+            for j in range(num_faces):
+                z_face = z[last_idx + j].cpu().detach().numpy()
+                np.save(os.path.join(output_dir, 'surf_{}.npy'.format(j)), z_face)
+            last_idx += num_faces
+
     else:
         assert args.option == 'edge', 'please choose between surface or edge'
         train_dataset = EdgeData(args.data, args.train_list, aug=args.data_aug)
@@ -39,8 +54,6 @@ def run(args):
 
         print('Start edge inference...')
         z = vae.inference_latent()
-
-    return z
 
 if __name__ == "__main__":
     run(args)
