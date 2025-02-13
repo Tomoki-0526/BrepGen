@@ -133,8 +133,9 @@ class SurfData(torch.utils.data.Dataset):
             datas = [] 
             groups = []
             for uid in data_list:
+                chunk = str(math.floor(int(uid.split('.')[0])/10000)).zfill(4)
                 try:
-                    path = os.path.join(input_data, str(math.floor(int(uid.split('.')[0])/10000)).zfill(4), uid)
+                    path = os.path.join(input_data, chunk, uid)
                 except Exception:
                     path = os.path.join(input_data, uid)
                 
@@ -155,8 +156,9 @@ class SurfData(torch.utils.data.Dataset):
             datas = [] 
             groups = []
             for uid in data_list:
+                chunk = str(math.floor(int(uid.split('.')[0])/10000)).zfill(4)
                 try:
-                    path = os.path.join(input_data, str(math.floor(int(uid.split('.')[0])/10000)).zfill(4), uid)
+                    path = os.path.join(input_data, chunk, uid)
                 except Exception:
                     path = os.path.join(input_data, uid)
                 
